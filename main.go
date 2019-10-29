@@ -12,6 +12,9 @@ const (
 	connType = "tcp"
 )
 
+var IDCounter = 0
+var playerMap = make(map[int]Player)
+
 func main() {
 	fmt.Println("Opening port of type", connType, "at", connHost+":"+connPort)
 	l, err := net.Listen(connType, connHost+":"+connPort)
@@ -28,8 +31,19 @@ func main() {
 			os.Exit(1)
 		}
 
-		go handleRequest(conn)
+		IDCounter++
+		playerMap[IDCounter] = Player{
+			uuid: [16]byte{},
+			name: "",
+			conn: conn,
+		}
 	}
+}
+
+type Player struct {
+	uuid [16]byte
+	name string
+	conn net.Conn
 }
 
 func handleRequest(conn net.Conn) {
