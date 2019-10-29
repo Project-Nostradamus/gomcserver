@@ -1,32 +1,31 @@
 package packet
 
-type ( 
+type (
 	Boolean bool
 
-	Byte int8
+	Byte         int8
 	UnsignedByte uint8
 
-	Short int16
+	Short         int16
 	UnsignedShort uint16
 
-	Int int32
+	Int         int32
 	UnsignedInt uint32
 
-	Float float32
+	Float  float32
 	Double float64
 
 	String string
 
-	Chat string
+	Chat       string
 	Identifier string
-	VarInt int32
-	VarLong int64
-	
+	VarInt     int32
+	VarLong    int64
+
 	Position struct {
-		x,y,z int32
+		x, y, z int32
 	}
 
 	Angle byte
-	UUID [16]byte
-
-}
+	UUID  [16]byte
+)
