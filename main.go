@@ -17,6 +17,7 @@ type Info struct {
 	version *Version
 	players *Players
 	description *Description
+	favicon string
 
 }
 
@@ -91,14 +92,22 @@ func handleRequest(conn net.Conn) {
 	{
 		"version": {
 			"name": "1.8.9",
-			"protocol": 49
+			"protocol": 47
 		}
 		"players": {
+			"max": 3,
+			"online": 0,
+			"sample": {
+				"name": "Bob",
+				"id": "4566e69f-c907-48ee-8d71-d7ba5aa00d20"
+			}
+		}
+		"description": {
+			"text": "Hi"
+		}
+		"favicon": nil
 
 	}
-	}
-
-
 }
 
 func (j *)  {
