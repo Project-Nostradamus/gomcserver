@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
-	"encoding/json"
 )
 
 const (
@@ -12,35 +12,6 @@ const (
 	connPort = "25565"
 	connType = "tcp"
 )
-
-type Info struct {
-	version *Version
-	players *Players
-	description *Description
-	favicon string
-
-}
-
-type Version struct {
-	name string
-	protocol int
-}
-
-type Players struct {
-	max int
-	online int
-	sample *Sample
-}
-
-type Sample struct {
-	name string
-	id string
-}
-
-type Description struct {
-	text string
-}
-
 
 var IDCounter = 0
 var playerMap = make(map[int]Player)
@@ -89,28 +60,52 @@ func handleRequest(conn net.Conn) {
 
 	//JSON!!!!!!
 	serverinfo :=
-	{
-		"version": {
-			"name": "1.8.9",
-			"protocol": 47
+		Info{
+			version: Version{
+				name:     "1.8.9",
+				protocol: 47,
+			},
+			players: Players{
+				max:    3,
+				online: 0,
+				sample: Sample{
+					name: "Bob",
+					id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+				},
+			},
+			description: Description{
+				text: "Hi",
+			},
+			favicon: nil,
 		}
-		"players": {
-			"max": 3,
-			"online": 0,
-			"sample": {
-				"name": "Bob",
-				"id": "4566e69f-c907-48ee-8d71-d7ba5aa00d20"
-			}
-		}
-		"description": {
-			"text": "Hi"
-		}
-		"favicon": nil
 
-	}
+	sendbuf, _ = json.Marshal(serverinfo)
+	conn.Write(sendbuf)
 }
 
-func (j *)  {
-
+type Info struct {
+	version     Version
+	players     Players
+	description Description
+	favicon     string
 }
 
+type Version struct {
+	name     string
+	protocol int
+}
+
+type Players struct {
+	max    int
+	online int
+	sample Sample
+}
+
+type Sample struct {
+	name string
+	id   string
+}
+
+type Description struct {
+	text string
+}
