@@ -51,7 +51,8 @@ type Player struct {
 
 func handleRequest(conn net.Conn) {
 	buf := make([]byte, 100)
-	sendbuf := make([]byte, 100)
+	holdbuf := make([]byte, 100)
+	sendbuf := make([]byte, 196)
 	_, err := conn.Read(buf)
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
@@ -79,8 +80,12 @@ func handleRequest(conn net.Conn) {
 			Favicon: "",
 		}
 
-	sendbuf, _ = json.Marshal(serverinfo)
+	holdbuf, _ = json.Marshal(serverinfo)
+	sendbuf = []byte{0}
+	sendbuf = append(sendbuf, holdbuf...)
+
 	fmt.Println(sendbuf)
+	fmt.Println(len(sendbuf))
 	conn.Write(sendbuf)
 }
 
