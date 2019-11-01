@@ -57,37 +57,61 @@ func handleRequest(conn net.Conn) {
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 	}
-	fmt.Println(buf)
+	fmt.Println("Received Packet: ", buf)
 
-	//JSON!!!!!!
-	serverinfo :=
-		Info{
-			Version: Version{
-				Name:     "1.8.9",
-				Protocol: 47,
-			},
-			Players: Players{
-				Max:    3,
-				Online: 0,
-				Sample: Sample{
-					Name: "Bob",
-					Id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+	//Server Ping & Pong
+	if buf[1] == 1{
+		conn.Write(buf)
+		fmt.Println("Pong")
+		return
+	}
+
+	//Server Info
+	if buf[1] == 0 {
+		serverinfo :=
+			Info{
+				Version: Version{
+					Name:     "1.8.9",
+					Protocol: 47,
 				},
-			},
-			Description: Description{
-				Text: "Hi",
-			},
-			Favicon: "",
+				Players: Players{
+					Max:    3,
+					Online: 0,
+					Sample: Sample{
+						Name: "Bob",
+						Id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+					},
+				},
+				Description: Description{
+					Text: "Hi",
+				},
+				Favicon: "",
+			}
+		holdbuf, _ = json.Marshal(serverinfo)
+		sendbuf = []byte{encodeVarInt(holdbuf) + 2), 0x00}
+		sendbuf = append(sendbuf, holdbuf...)
+
+		fmt.Println("Raw Json: ", serverinfo)
+		fmt.Println("Sent Packet: ", sendbuf)
+		fmt.Println("Length of Sent Packet: ", len(sendbuf))
+		conn.Write(sendbuf)
+	}
+}
+
+func encodeVarInt(v uint32) (vi []byte) {
+	num := uint32(v)
+	for {
+		b := num & 0x7F
+		num >>= 7
+		if num != 0 {
+			b |= 0x80
 		}
-
-	holdbuf, _ = json.Marshal(serverinfo)
-	sendbuf = []byte{byte(len(holdbuf) + 1), 0}
-	sendbuf = append(sendbuf, holdbuf...)
-
-	fmt.Println(serverinfo)
-	fmt.Println(sendbuf)
-	fmt.Println(len(sendbuf))
-	conn.Write(sendbuf)
+		vi = append(vi, byte(b))
+		if num == 0 {
+			break
+		}
+	}
+	return
 }
 
 type Info struct {
