@@ -61,51 +61,52 @@ func handleRequest(conn net.Conn) {
 	//JSON!!!!!!
 	serverinfo :=
 		Info{
-			version: Version{
-				name:     "1.8.9",
-				protocol: 47,
+			Version: Version{
+				Name:     "1.8.9",
+				Protocol: 47,
 			},
-			players: Players{
-				max:    3,
-				online: 0,
-				sample: Sample{
-					name: "Bob",
-					id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+			Players: Players{
+				Max:    3,
+				Online: 0,
+				Sample: Sample{
+					Name: "Bob",
+					Id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
 				},
 			},
-			description: Description{
-				text: "Hi",
+			Description: Description{
+				Text: "Hi",
 			},
-			favicon: nil,
+			Favicon: "",
 		}
 
 	sendbuf, _ = json.Marshal(serverinfo)
+	fmt.Println(sendbuf)
 	conn.Write(sendbuf)
 }
 
 type Info struct {
-	version     Version
-	players     Players
-	description Description
-	favicon     string
+	Version     Version
+	Players     Players
+	Description Description
+	Favicon     string
 }
 
 type Version struct {
-	name     string
-	protocol int
+	Name     string
+	Protocol int
 }
 
 type Players struct {
-	max    int
-	online int
-	sample Sample
+	Max    int
+	Online int
+	Sample Sample
 }
 
 type Sample struct {
-	name string
-	id   string
+	Name string
+	Id   string
 }
 
 type Description struct {
-	text string
+	Text string
 }
