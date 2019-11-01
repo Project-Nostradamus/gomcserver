@@ -81,9 +81,10 @@ func handleRequest(conn net.Conn) {
 		}
 
 	holdbuf, _ = json.Marshal(serverinfo)
-	sendbuf = []byte{0}
+	sendbuf = []byte{byte(len(holdbuf) + 1), 0}
 	sendbuf = append(sendbuf, holdbuf...)
 
+	fmt.Println(serverinfo)
 	fmt.Println(sendbuf)
 	fmt.Println(len(sendbuf))
 	conn.Write(sendbuf)
