@@ -1,6 +1,7 @@
 package packet
 
 type Packet struct {
-	ID byte
+	ID   byte
 	Data []byte
+}
 }

@@ -60,7 +60,7 @@ func handleRequest(conn net.Conn) {
 	fmt.Println("Received Packet: ", buf)
 
 	//Server Ping & Pong
-	if buf[1] == 1{
+	if buf[0] != 254 && buf[1] == 1 {
 		conn.Write(buf)
 		fmt.Println("Pong")
 		return
@@ -75,11 +75,13 @@ func handleRequest(conn net.Conn) {
 					Protocol: 47,
 				},
 				Players: Players{
-					Max:    3,
-					Online: 0,
-					Sample: Sample{
-						Name: "Bob",
-						Id:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+					Max:    100,
+					Online: 5,
+					Sample: []Sample{
+						Sample{
+							Name: "Bob",
+							ID:   "4566e69f-c907-48ee-8d71-d7ba5aa00d20",
+						},
 					},
 				},
 				Description: Description{
@@ -88,12 +90,13 @@ func handleRequest(conn net.Conn) {
 				Favicon: "",
 			}
 		holdbuf, _ = json.Marshal(serverinfo)
-		sendbuf = []byte{encodeVarInt(holdbuf) + 2), 0x00}
+		sendbuf = encodeVarInt(uint32(len(holdbuf) + 2))
+		sendbuf = append(sendbuf, 0)
 		sendbuf = append(sendbuf, holdbuf...)
 
-		fmt.Println("Raw Json: ", serverinfo)
+		fmt.Println("Raw Json: ", string(holdbuf))
 		fmt.Println("Sent Packet: ", sendbuf)
-		fmt.Println("Length of Sent Packet: ", len(sendbuf))
+		fmt.Println("Length of Sent Packet: ", len(sendbuf)+2)
 		conn.Write(sendbuf)
 	}
 }
@@ -115,28 +118,28 @@ func encodeVarInt(v uint32) (vi []byte) {
 }
 
 type Info struct {
-	Version     Version
-	Players     Players
-	Description Description
-	Favicon     string
+	Version     Version     `json:"version"`
+	Players     Players     `json:"players"`
+	Description Description `json:"description"`
+	Favicon     string      `json:"favicon"`
 }
 
 type Version struct {
-	Name     string
-	Protocol int
+	Name     string `json:"name"`
+	Protocol int    `json:"protocol"`
 }
 
 type Players struct {
-	Max    int
-	Online int
-	Sample Sample
+	Max    int      `json:"max"`
+	Online int      `json:"online"`
+	Sample []Sample `json:"sample"`
 }
 
 type Sample struct {
-	Name string
-	Id   string
+	Name string `json:"name"`
+	ID   string `json:"id"`
 }
 
 type Description struct {
-	Text string
+	Text string `json:"text"`
 }
